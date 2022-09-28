@@ -1,3 +1,3 @@
-# Terraform AWS <TODO_EXPANDED> Examples
+# Terraform AWS For Each Unknown Examples
 
-- [Complete](https://github.com/clowdhaus/terraform-aws-<TODO>/tree/main/examples/complete)
+- [Complete](https://github.com/clowdhaus/terraform-aws-for-each-unknown/tree/main/examples/complete)

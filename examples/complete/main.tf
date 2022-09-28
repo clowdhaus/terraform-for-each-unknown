@@ -4,51 +4,77 @@ provider "aws" {
 
 locals {
   region = "us-east-1"
-  name   = "<TODO>-ex-${replace(basename(path.cwd), "_", "-")}"
+  name   = "ex-${replace(basename(path.cwd), "_", "-")}"
 
   tags = {
     Name       = local.name
     Example    = local.name
-    Repository = "https://github.com/clowdhaus/terraform-aws-<TODO>"
+    Repository = "https://github.com/clowdhaus/terraform-for-each-unknown"
   }
 }
 
 ################################################################################
-# <TODO_EXPANDED> Module
+# Module
 ################################################################################
 
-module "<TODO_UNDER>_disabled" {
+# Module instantiation maps directly to module definition
+module "direct" {
   source = "../.."
 
-  create = false
-}
+  name = local.name
 
-module "<TODO_UNDER>" {
-  source = "../.."
-
-  create = false
+  # This works when used directly and circumvents the known issues in
+  # - https://github.com/hashicorp/terraform/issues/4149
+  # - https://github.com/hashicorp/terraform/issues/30937
+  # due to the use of a static key and the computed value is used as the value
+  iam_role_additional_policies = {
+    "additional" = aws_iam_policy.additional.arn
+  }
 
   tags = local.tags
+}
+
+# Module instantiation points at a sub-module which wraps the module definition
+# within a `for_each` loop for creating multiples within one module instantiation
+module "nested" {
+  source = "../../modules/nested"
+
+  fargate_profiles = {
+    one = {
+      # This does NOT work when its nested for reasons that I do not yet understand and
+      # am trying to figure out. Normally, module nesting is something I would prefer to avoid
+      # but in some scenarios it is quite useful (i.e. - in scenarios where you want to stamp out
+      # a repeatable set of logic used in a higher order module https://github.com/terraform-aws-modules/terraform-aws-eks/blob/32000068258828b812b3b6f76efcb2b452b810f3/node_groups.tf#L196-L464)
+      #
+      # This is what I am after - trying to figure out
+      # 1. Is this possible with what we know about #4149 and #30937 (i.e. - can we use a static key even when nesting maps within maps)
+      # 2. If it is possible, what does that solution look like to avoid the unknown computed values when nesting maps within maps
+      iam_role_additional_policies = {
+        "additional" = aws_iam_policy.additional.arn
+      }
+
+      tags = local.tags
+    }
+  }
 }
 
 ################################################################################
 # Supporting Resources
 ################################################################################
 
-module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 3.0"
+resource "aws_iam_policy" "additional" {
+  name = "${local.name}-additional"
 
-  name = local.name
-  cidr = "10.99.0.0/18"
-
-  azs             = ["${local.region}a", "${local.region}b", "${local.region}c"]
-  public_subnets  = ["10.99.0.0/24", "10.99.1.0/24", "10.99.2.0/24"]
-  private_subnets = ["10.99.3.0/24", "10.99.4.0/24", "10.99.5.0/24"]
-
-  enable_nat_gateway      = false
-  single_nat_gateway      = true
-  map_public_ip_on_launch = false
-
-  tags = local.tags
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ec2:Describe*",
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+    ]
+  })
 }

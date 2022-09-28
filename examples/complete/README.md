@@ -1,4 +1,4 @@
-# Complete AWS <TODO_EXPANDED> Example
+# Complete AWS For Each Unknown Example
 
 Configuration in this directory creates:
 
@@ -26,19 +26,22 @@ Note that this example may create resources which will incur monetary charges on
 
 ## Providers
 
-No providers.
+| Name | Version |
+|------|---------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_<TODO_UNDER>"></a> [<TODO\_UNDER>](#module\_<TODO\_UNDER>) | ../.. | n/a |
-| <a name="module_<TODO_UNDER>_disabled"></a> [<TODO\_UNDER>\_disabled](#module\_<TODO\_UNDER>\_disabled) | ../.. | n/a |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 3.0 |
+| <a name="module_direct"></a> [direct](#module\_direct) | ../.. | n/a |
+| <a name="module_nested"></a> [nested](#module\_nested) | ../../modules/nested | n/a |
 
 ## Resources
 
-No resources.
+| Name | Type |
+|------|------|
+| [aws_iam_policy.additional](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 
 ## Inputs
 
@@ -49,4 +52,4 @@ No inputs.
 No outputs.
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
-Apache-2.0 Licensed. See [LICENSE](https://github.com/clowdhaus/terraform-aws-<TODO>/blob/main/LICENSE).
+Apache-2.0 Licensed. See [LICENSE](https://github.com/clowdhaus/terraform-aws-for-each-unknown/blob/main/LICENSE).
